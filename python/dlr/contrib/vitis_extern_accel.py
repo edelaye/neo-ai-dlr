@@ -22,6 +22,8 @@ except:
 def accel_fused(graph_path, kernel_name, input_name, output_name, 
     output_layout, model_name, platform, out, *ins):
 
+    #print(kernel_name, input_name, output_name)
+
     if platform == "DPU":
 
         # Attach to DPU driver and prepare for running
@@ -34,7 +36,8 @@ def accel_fused(graph_path, kernel_name, input_name, output_name,
         task = n2cube.dpuCreateTask(kernel, 0)
 
         # Load image to DPU
-        n2cube.dpuSetInputTensorInHWCFP32(task, input_name, ins[0], len(ins[0]))
+        X = ins[0].asnumpy().reshape((-1))
+        n2cube.dpuSetInputTensorInHWCFP32(task, input_name, X, len(X))
 
         # Model run on DPU """
         n2cube.dpuRunTask(task)
@@ -50,7 +53,7 @@ def accel_fused(graph_path, kernel_name, input_name, output_name,
         value = np.array(value).astype(np.float32)/scale
 
         # DPU output is in NHWC
-        if layout == 'NCHW':
+        if output_layout == 'NCHW':
             value = np.transpose(value,(0,3,1,2))
 
         
