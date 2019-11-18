@@ -1,4 +1,22 @@
-"""Registration of fused acceleration operation"""
+"""
+All userspace code authored by Xilinx is released under the following license:
+
+Copyright (C) 2019 Xilinx, Inc
+
+Licensed under the Apache License, Version 2.0 (the "License"). You may
+not use this file except in compliance with the License. A copy of the
+License is located at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.
+"""
+
+""" Registration of Xilinx Vitis-AI fused acceleration operation """
 
 import os
 import tvm
@@ -10,12 +28,12 @@ try:
     import xfdnn.rt.xdnn_io as xdnn_io
     from xfdnn.rt import xdnn, xdnn_io
 except:
-    warnings.warn("Could not import xfdnn libraries")
+    warnings.warn("Xilinx xfdnn python module not found.")
 
 try:
     from dnndk import n2cube, dputils
 except:
-    warnings.warn("Could not import dnndk n2cube")
+    warnings.warn("Xilinx dnndk python module not found.")
 
 
 @tvm.register_func("tvm.accel.accel_fused")
