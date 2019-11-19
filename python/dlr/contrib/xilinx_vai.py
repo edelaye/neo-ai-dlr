@@ -41,7 +41,7 @@ except:
 
 @tvm.register_func("tvm.accel.accel_fused")
 def accel_fused(kernel_name, input_name, output_name, 
-    output_layout, out, *ins):
+    layout, out, *ins):
 
     # Attach to DPU driver and prepare for running
     n2cube.dpuOpen()
@@ -68,10 +68,15 @@ def accel_fused(kernel_name, input_name, output_name,
     # Get the output tensor data 
     n2cube.dpuGetTensorData(address, value, size)
     scale = n2cube.dpuGetOutputTensorScale(task, output_name, idx=0)
-    value = np.array(value).astype(np.float32)/scale
+    
+    value = np.array(value).astype(np.float32) * float(scale)
+    
+    value_shape = tuple(out.shape) if layout == 'NHWC' else  \
+        (out.shape[0], out.shape[2], out.shape[3], out.shape[1])
+    value = np.reshape(value, value_shape)
 
     # DPU output is in NHWC
-    if output_layout == 'NCHW':
+    if layout == 'NCHW':
         value = np.transpose(value,(0,3,1,2))
-        
+    
     tvm.nd.array(value).copyto(out)
